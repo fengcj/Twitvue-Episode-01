@@ -10,7 +10,7 @@
           f7-page.navbar-fixed
             f7-searchbar(cancel-link='Cancel', placeholder='Search in items', :clear='true', v-on:change="onChange")
             f7-list.tweets(media-list='')
-              f7-list-item(v-on:click='onClick(tweet)', link='/tweet/', v-for='tweet in tweets', :media='tweet.user.profile_image_html', :title='tweet.user.name', :subtitle='tweet.user.screen_name_at', :text='tweet.text')
+              f7-list-item(v-on:click='onClick(tweet)', link='/tweet/', v-for='tweet in tweets', :media='`<img src="${tweet.user.profile_image_url}">`', :title='tweet.user.name', :subtitle='`@${tweet.user.screen_name}`', :text='tweet.text')
 </template>
 
 <script>
@@ -21,9 +21,9 @@ let self;
 
 function addData(tweets) {
   for (let tweet of tweets) {
-    tweet.user.screen_name_at = '@' + tweet.user.screen_name;
-    tweet.user.profile_image_html = '<img src="' + tweet.user.profile_image_url + '">';
-    
+    //  tweet.user.screen_name_at = '@' + tweet.user.screen_name;
+    //  tweet.user.profile_image_html = '<img src="' + tweet.user.profile_image_url + '">';
+
     let now = new Date();
     let createdAt = new Date(tweet.created_at);
     let timeDiff = dateDiff(createdAt, now);
@@ -69,7 +69,7 @@ export default {
         self.$data.tweets.splice(0, self.$data.tweets.length);
       }
       else {
-        window.f7.showPreloader();
+        self.$f7.showPreloader();
         cb.__call(
             "search_tweets",
             "q=" + term,
@@ -77,10 +77,10 @@ export default {
                 let result = reply.statuses;
                 console.log(result);
                 store.tweets = result;
-                self.$data.tweets.length = 0;
-                self.$data.tweets.push(...result);
+                self.tweets.length = 0;
+                self.tweets.push(...result);
                 addData(self.tweets);
-                window.f7.hidePreloader();
+                self.$f7.hidePreloader();
             },
             true // this parameter required
         );
